@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Gay's Profile wp</title>
+    <url>/2019/11/13/Gay-s-Profile-wp/</url>
+    <content><![CDATA[<h1 id="CNSS-Recruit-GAY’-Profile-Plus-Writeup"><a href="#CNSS-Recruit-GAY’-Profile-Plus-Writeup" class="headerlink" title="[CNSS Recruit] GAY’ Profile Plus Writeup"></a>[CNSS Recruit] GAY’ Profile Plus Writeup</h1><p>首先F12查看源码,看到提示:</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Why not try to get /source again? --&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>于是尝试打开/source,得到源码后整理排版:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request</span><br><span class="line"><span class="keyword">import</span> os, string</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">()</span>:</span></span><br><span class="line">    index = <span class="string">r"""</span></span><br><span class="line"><span class="string">&lt;html&gt;</span></span><br><span class="line"><span class="string">&lt;head&gt;</span></span><br><span class="line"><span class="string">&lt;title&gt;Flask&lt;/title&gt;</span></span><br><span class="line"><span class="string">&lt;/head&gt;</span></span><br><span class="line"><span class="string">&lt;body&gt;</span></span><br><span class="line"><span class="string">&lt;!-- Why not try to get /source again? --&gt;</span></span><br><span class="line"><span class="string">&lt;h3&gt;Gay or not a gay, that is not a question.&lt;/h3&gt;</span></span><br><span class="line"><span class="string">&lt;p&gt;Let's see.&lt;/p&gt;</span></span><br><span class="line"><span class="string">&lt;p&gt;Go get your own &lt;a href='/file?name=profile'&gt;profile&lt;/a&gt;.&lt;/p&gt;</span></span><br><span class="line"><span class="string">&lt;/body&gt;</span></span><br><span class="line"><span class="string">&lt;/html&gt;</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">return</span> index</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route('/file')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">profile</span><span class="params">()</span>:</span></span><br><span class="line">    filename = os.path.join(<span class="string">'./'</span>, request.args[<span class="string">'name'</span>])</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">if</span> os.path.abspath(filename).startswith(os.getcwd()) <span class="keyword">and</span> filename != <span class="string">'./profile'</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">'No No No'</span>, <span class="number">422</span></span><br><span class="line"></span><br><span class="line">        content = open(filename).read()</span><br><span class="line">        <span class="keyword">return</span> content, <span class="number">200</span></span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Error in reading your profile'</span>, <span class="number">500</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route('/source')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">source</span><span class="params">()</span>:</span></span><br><span class="line">    source = open(__file__).read()</span><br><span class="line">    <span class="keyword">return</span> source</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    app.run(<span class="string">'0.0.0.0'</span>, <span class="number">8080</span>)</span><br></pre></td></tr></table></figure>
+
+<p>题目表示flag在./flag文件中， 但发现源码中有:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> os.path.abspath(filename).startswith(os.getcwd()) <span class="keyword">and</span> filename != <span class="string">'./profile'</span>:</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'No No No'</span>, <span class="number">422</span></span><br></pre></td></tr></table></figure>
+
+<p>由于and为短路运算，故只需满足前一个条件为false，题目给出hint: proc文件系统，联想到/proc/self/cwd，得到paylaod: file?name=/proc/self/cwd/flag，得到flag。</p>
+<h2 id="关于Linux中proc文件系统的理解"><a href="#关于Linux中proc文件系统的理解" class="headerlink" title="关于Linux中proc文件系统的理解"></a>关于Linux中proc文件系统的理解</h2><p>proc文件系统是类unix系统中的一个伪文件系统，在启动时动态生成，不占用储存空间，仅占用内存。该文件系统连通了内核空间和用户空间，其中的文件包含了硬件信息和进程信息。此次用到的/proc/self/cwd提供了指向当前进程的工作目录的软链。</p>
+]]></content>
+      <tags>
+        <tag>ctf</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2019/11/13/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+]]></content>
+  </entry>
+</search>
